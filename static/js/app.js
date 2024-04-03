@@ -64,3 +64,74 @@ function makeBar(sample){
     });
 };
 
+function makeBubble(sample){
+    //access  sample data to populate bubble chart
+    d3.json(url).then((data) => {
+        let sample_data = data.samples;
+        //apply filter that matches sample id
+        let results = sample_data.filter(id => id.id == sample);
+        //store the first entry in results filter
+        let first_result = results[0];
+        console.log(first_result);
+        //store the results and show in the bubble chart
+        let sample_values = first_result.sample_values;
+        let otu_ids = first_result.otu_ids;
+        let otu_labels = first_result.otu_labels;
+        console.log(sample_values);
+        console.log(otu_ids);
+        console.log(otu_labels);
+
+        //create bubble chart
+        let bubble_trace = {
+            x: otu_ids.reverse(),
+            y: sample_values.reverse(),
+            text: otu_labels.reverse(),
+            mode: 'markers',
+            marker: {
+                size: sample_values,
+                color: otu_ids,
+            }
+        };
+
+        let layout = {
+            title: "Bacteria Count for Sample IDs",
+            xaxis: {title: 'OTU ID'},
+            yaxis: {title: 'Number of Bacteria'}
+        };
+        Plotly.newPlot("bubble", [bubble_trace], layout); 
+    });
+};
+
+//create the demographic info function to populate each sample's info
+function makeDemographics(sample){
+    //access the sample data for populating the demographics section
+    d3.json(url).then((data) => {
+    //access the demographic info (metadata) with d3
+    let demographic_info = data.metadata;
+     //apply a filter that matches based on sample id
+    let results = demographic_info.filter(id => id.id == sample);
+    //store the first result to display in demographic info
+    let first_result = results[0];
+    console.log(first_result);
+    //this is used to clear out previous entries in the demographic info section by setting the text to a blank string
+    d3.select('#sample-metadata').text('');
+
+    Object.entries(first_result).forEach(([key,value]) => {
+        console.log(key,value);
+        //select the demographic info html section with d3 and append new key-value pair
+        d3.select('#sample-metadata').append('h3').text(`${key}, ${value}`);
+    });
+    
+    });
+};
+
+// //define the function when the dropdown detects a change (function name as defined in index.html)
+function optionChanged(value){
+    //log the value for debug
+    console.log(value);
+    makeBar(value);
+    makeBubble(value);
+    makeDemographics(value);
+};
+
+init();
