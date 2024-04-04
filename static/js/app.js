@@ -38,7 +38,7 @@ function makeBar(sample){
     d3.json(url).then((data) => {
         let sample_data = data.samples;
         //align filter that matches sample id
-        let results = sample.data.filter(id => id.id ==sample);
+        let results = sample.data.filter(id => id.id == sample);
         // store first entry in results filter
         let first_result = results[0];
         console.log(first_result);
@@ -50,16 +50,17 @@ function makeBar(sample){
         console.log(otu_ids);
         console.log(otu_labels);
 
-        //create trace for bar chart
+        //create bar chart
         let bar_trace = {
             x: sample_values.reverse(),
-            y: otu_ids.map(item => `OTU ${item}`).reverse(),
+            y: otu_ids.map(id => `OTU ${id}`).reverse(),
             text: otu_labels.reverse(),
             type: 'bar',
             orientation: 'h'
         };
 
         let layout = {title: "Top 10 OTUs"};
+        
         Plotly.newPlot("bar", [bar_trace], layout);
     });
 };
@@ -90,6 +91,7 @@ function makeBubble(sample){
             marker: {
                 size: sample_values,
                 color: otu_ids,
+                colorscale: 'Earth'
             }
         };
 
@@ -102,9 +104,9 @@ function makeBubble(sample){
     });
 };
 
-//create the demographic info function to populate each sample's info
+//create the demographic info function to populate sample's info
 function makeDemographics(sample){
-    //access the sample data for populating the demographics section
+    //sample data for populating the demographics section
     d3.json(url).then((data) => {
     //access the demographic info (metadata) with d3
     let demographic_info = data.metadata;
@@ -113,7 +115,7 @@ function makeDemographics(sample){
     //store the first result to display in demographic info
     let first_result = results[0];
     console.log(first_result);
-    //this is used to clear out previous entries in the demographic info section by setting the text to a blank string
+    //clear out previous entries in the demographic info section 
     d3.select('#sample-metadata').text('');
 
     Object.entries(first_result).forEach(([key,value]) => {
@@ -125,7 +127,7 @@ function makeDemographics(sample){
     });
 };
 
-// //define the function when the dropdown detects a change (function name as defined in index.html)
+// //define the function when the dropdown detects a change (defined in index.html)
 function optionChanged(value){
     //log the value for debug
     console.log(value);
